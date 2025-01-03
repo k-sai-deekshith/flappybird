@@ -5,7 +5,9 @@ const BIRD_STYLES = {
   sheriff: { body: '#e6b800', hat: '#654321', bandana: '#483d8b' },
   bandit: { body: '#4a4a4a', hat: '#1a1a1a', bandana: '#8b0000' },
   prospector: { body: '#deb887', hat: '#966f33', bandana: '#daa520' },
-};
+} as const;
+
+export type BirdStyle = keyof typeof BIRD_STYLES;
 
 export default class Bird {
   x: number;
@@ -16,9 +18,9 @@ export default class Bird {
   private rotation: number;
   private particles: Particle[];
   private flapAnimation: number;
-  private style: keyof typeof BIRD_STYLES;
+  private style: BirdStyle;
 
-  constructor(x: number, y: number, style: keyof typeof BIRD_STYLES = 'cowboy') {
+  constructor(x: number, y: number, style: BirdStyle = 'cowboy') {
     this.x = x;
     this.y = y;
     this.width = 34;
@@ -30,7 +32,7 @@ export default class Bird {
     this.style = style;
   }
 
-  setStyle(style: keyof typeof BIRD_STYLES) {
+  setStyle(style: BirdStyle) {
     this.style = style;
   }
 

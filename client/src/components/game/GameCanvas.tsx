@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import Bird from "./Bird";
+import Bird, { type BirdStyle } from "./Bird";
 import Pipe from "./Pipe";
 import { audioManager } from "./AudioManager";
 import confetti from 'canvas-confetti';
@@ -64,7 +64,7 @@ interface GameCanvasProps {
   isPlaying: boolean;
   difficulty: Difficulty;
   highScore: number;
-  birdStyle?: string;  
+  birdStyle: BirdStyle;
 }
 
 export default function GameCanvas({ 
@@ -104,7 +104,6 @@ export default function GameCanvas({
     const bird = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle);
     birdRef.current = bird;
 
-    // Initialize background elements
     cloudsRef.current = Array.from({ length: 3 }, () => ({
       x: Math.random() * CANVAS_WIDTH,
       y: Math.random() * (CANVAS_HEIGHT / 3),
@@ -190,7 +189,6 @@ export default function GameCanvas({
       ctx.closePath();
       ctx.fill();
 
-      // Add darker outline for better definition
       ctx.strokeStyle = '#A0522D';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -206,7 +204,6 @@ export default function GameCanvas({
     };
 
     const drawBackground = () => {
-      // Dramatic sunset sky gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
       gradient.addColorStop(0, '#FF6B6B');
       gradient.addColorStop(0.3, '#FFD93D');
@@ -214,7 +211,6 @@ export default function GameCanvas({
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Far mountains (darker)
       ctx.fillStyle = '#6B4423';
       ctx.beginPath();
       ctx.moveTo(-50, CANVAS_HEIGHT - 200);
@@ -228,7 +224,6 @@ export default function GameCanvas({
       ctx.lineTo(-50, CANVAS_HEIGHT);
       ctx.fill();
 
-      // Near mountains
       ctx.fillStyle = '#8B4513';
       ctx.beginPath();
       ctx.moveTo(-50, CANVAS_HEIGHT - 150);
@@ -242,14 +237,12 @@ export default function GameCanvas({
       ctx.lineTo(-50, CANVAS_HEIGHT);
       ctx.fill();
 
-      // Desert ground with dunes
       const groundGradient = ctx.createLinearGradient(0, CANVAS_HEIGHT - 112, 0, CANVAS_HEIGHT);
       groundGradient.addColorStop(0, '#DAA520');
       groundGradient.addColorStop(1, '#CD853F');
       ctx.fillStyle = groundGradient;
       ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH, 112);
 
-      // Sand dune details
       ctx.strokeStyle = 'rgba(139, 69, 19, 0.3)';
       ctx.lineWidth = 2;
       for (let x = 0; x < CANVAS_WIDTH; x += 40) {
@@ -264,7 +257,6 @@ export default function GameCanvas({
         ctx.stroke();
       }
 
-      // Heat haze effect
       ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
       for (let x = 0; x < CANVAS_WIDTH; x += 100) {
         const time = Date.now() * 0.001;
@@ -272,7 +264,6 @@ export default function GameCanvas({
         ctx.fillRect(x, y, 50, 2);
       }
 
-      // Moving Clouds
       cloudsRef.current.forEach(cloud => {
         cloud.x -= cloud.speed;
         if (cloud.x + cloud.width < 0) {
@@ -282,7 +273,6 @@ export default function GameCanvas({
         drawCloud(cloud);
       });
 
-      // Moving Tumbleweeds
       tumbleweedsRef.current.forEach(tumbleweed => {
         tumbleweed.x -= tumbleweed.speed;
         tumbleweed.rotation += 0.1;
@@ -293,7 +283,6 @@ export default function GameCanvas({
         drawTumbleweed(tumbleweed);
       });
 
-      // Moving Dust Particles
       dustParticlesRef.current.forEach(particle => {
         particle.x -= particle.speed;
         if (particle.x + particle.size < 0) {
@@ -333,7 +322,6 @@ export default function GameCanvas({
           onScoreChange(newScore);
           audioManager.playSound('point');
 
-          // Trigger confetti when score exceeds high score
           if (newScore > highScore) {
             confetti({
               particleCount: 100,
@@ -358,7 +346,6 @@ export default function GameCanvas({
         audioManager.stopBackgroundMusic();
 
         const finalScore = scoreRef.current;
-        // Draw one last frame to show collision particles
         requestAnimationFrame(() => {
           bird.draw(ctx);
           cancelAnimationFrame(animationId);
