@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function GamePage() {
   const { 
     score,
+    setScore,
     gameOver,
     highScore,
     isPlaying,
@@ -31,6 +32,7 @@ export default function GamePage() {
       <div className="relative">
         <GameCanvas 
           onGameOver={handleGameOver} 
+          onScoreChange={setScore}
           isPlaying={isPlaying} 
           difficulty={difficulty}
         />

@@ -58,6 +58,7 @@ export function useGame() {
 
   return {
     score,
+    setScore,
     gameOver,
     highScore,
     isPlaying,

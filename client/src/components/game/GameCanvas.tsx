@@ -36,11 +36,12 @@ const PIPE_WIDTH = 52;
 
 interface GameCanvasProps {
   onGameOver: (score: number) => void;
+  onScoreChange: (score: number) => void;
   isPlaying: boolean;
   difficulty: Difficulty;
 }
 
-export default function GameCanvas({ onGameOver, isPlaying, difficulty }: GameCanvasProps) {
+export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, difficulty }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const birdRef = useRef<Bird | null>(null);
   const pipesRef = useRef<Pipe[]>([]);
@@ -81,6 +82,7 @@ export default function GameCanvas({ onGameOver, isPlaying, difficulty }: GameCa
       birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2);
       pipesRef.current = [];
       scoreRef.current = 0;
+      onScoreChange(0);
       audioManager.stopBackgroundMusic();
       return;
     }
@@ -130,6 +132,7 @@ export default function GameCanvas({ onGameOver, isPlaying, difficulty }: GameCa
         if (pipe.x + PIPE_WIDTH < bird.x && !pipe.passed) {
           pipe.passed = true;
           scoreRef.current++;
+          onScoreChange(scoreRef.current);
           audioManager.playSound('point');
         }
 
@@ -161,7 +164,7 @@ export default function GameCanvas({ onGameOver, isPlaying, difficulty }: GameCa
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isPlaying, onGameOver, settings]);
+  }, [isPlaying, onGameOver, onScoreChange, settings]);
 
   return (
     <canvas
