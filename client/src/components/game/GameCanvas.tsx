@@ -87,6 +87,13 @@ export default function GameCanvas({
   // Get difficulty settings
   const settings = DIFFICULTY_SETTINGS[difficulty];
 
+  // Effect to update bird style when it changes
+  useEffect(() => {
+    if (birdRef.current) {
+      birdRef.current.setStyle(birdStyle);
+    }
+  }, [birdStyle]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -94,7 +101,7 @@ export default function GameCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const bird = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle as any);
+    const bird = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle);
     birdRef.current = bird;
 
     // Initialize background elements
@@ -140,7 +147,7 @@ export default function GameCanvas({
 
   useEffect(() => {
     if (!isPlaying) {
-      birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle as any);
+      birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle);
       pipesRef.current = [];
       scoreRef.current = 0;
       onScoreChange(0);
