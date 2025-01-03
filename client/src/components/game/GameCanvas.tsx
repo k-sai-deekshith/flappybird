@@ -70,8 +70,6 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
   const pipesRef = useRef<Pipe[]>([]);
   const scoreRef = useRef(0);
   const frameRef = useRef(0);
-  const bgOffsetRef = useRef(0);
-  const mountainsOffsetRef = useRef(0);
   const cloudsRef = useRef<Cloud[]>([]);
   const tumbleweedsRef = useRef<Tumbleweed[]>([]);
   const dustParticlesRef = useRef<DustParticle[]>([]);
@@ -192,7 +190,35 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Clouds
+      // Static Mountains
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath();
+      ctx.moveTo(0, CANVAS_HEIGHT - 200);
+      for (let x = 0; x < CANVAS_WIDTH; x += 50) {
+        ctx.lineTo(
+          x,
+          CANVAS_HEIGHT - 200 + Math.sin(x * 0.02) * 50
+        );
+      }
+      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.fill();
+
+      // Static Ground
+      ctx.fillStyle = '#DEB887';
+      ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH, 112);
+
+      // Ground texture
+      ctx.strokeStyle = '#8B4513';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < CANVAS_WIDTH; x += 30) {
+        ctx.beginPath();
+        ctx.moveTo(x, CANVAS_HEIGHT - 112);
+        ctx.lineTo(x + 15, CANVAS_HEIGHT - 90);
+        ctx.stroke();
+      }
+
+      // Moving Clouds
       cloudsRef.current.forEach(cloud => {
         cloud.x -= cloud.speed;
         if (cloud.x + cloud.width < 0) {
@@ -202,36 +228,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
         drawCloud(cloud);
       });
 
-      // Desert mountains with parallax
-      ctx.fillStyle = '#8B4513';
-      ctx.beginPath();
-      ctx.moveTo(0, CANVAS_HEIGHT - 200);
-
-      // Far mountains (slower movement)
-      for (let x = 0; x < CANVAS_WIDTH; x += 50) {
-        const offsetX = (x + mountainsOffsetRef.current * 0.5) % CANVAS_WIDTH;
-        ctx.lineTo(
-          offsetX,
-          CANVAS_HEIGHT - 200 + Math.sin(x * 0.02) * 50
-        );
-      }
-
-      // Close the mountain shape
-      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.lineTo(0, CANVAS_HEIGHT);
-      ctx.fill();
-
-      // Ground with parallax
-      const groundPattern = ctx.createPattern(createGroundTexture(ctx), 'repeat');
-      if (groundPattern) {
-        ctx.fillStyle = groundPattern;
-        ctx.save();
-        ctx.translate(-bgOffsetRef.current, 0);
-        ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH * 2, 112);
-        ctx.restore();
-      }
-
-      // Tumbleweeds
+      // Moving Tumbleweeds
       tumbleweedsRef.current.forEach(tumbleweed => {
         tumbleweed.x -= tumbleweed.speed;
         tumbleweed.rotation += 0.1;
@@ -242,7 +239,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
         drawTumbleweed(tumbleweed);
       });
 
-      // Dust particles
+      // Moving Dust Particles
       dustParticlesRef.current.forEach(particle => {
         particle.x -= particle.speed;
         if (particle.x + particle.size < 0) {
@@ -254,37 +251,8 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       });
     };
 
-    const createGroundTexture = (ctx: CanvasRenderingContext2D) => {
-      const textureCanvas = document.createElement('canvas');
-      textureCanvas.width = 60;
-      textureCanvas.height = 112;
-      const textureCtx = textureCanvas.getContext('2d');
-      if (!textureCtx) return textureCanvas;
-
-      // Base color
-      textureCtx.fillStyle = '#DEB887';
-      textureCtx.fillRect(0, 0, 60, 112);
-
-      // Texture lines
-      textureCtx.strokeStyle = '#8B4513';
-      textureCtx.lineWidth = 1;
-      for (let y = 0; y < 112; y += 15) {
-        textureCtx.beginPath();
-        textureCtx.moveTo(0, y);
-        textureCtx.lineTo(30, y + 10);
-        textureCtx.stroke();
-      }
-
-      return textureCanvas;
-    };
-
     const gameLoop = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-      // Update background offsets
-      bgOffsetRef.current = (bgOffsetRef.current + settings.PIPE_SPEED) % 60;
-      mountainsOffsetRef.current = (mountainsOffsetRef.current + settings.PIPE_SPEED * 0.5) % CANVAS_WIDTH;
-
       drawBackground();
 
       const bird = birdRef.current;
@@ -325,11 +293,12 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
         audioManager.playSound('hit');
         audioManager.stopBackgroundMusic();
 
+        const finalScore = scoreRef.current;
         // Draw one last frame to show collision particles
         requestAnimationFrame(() => {
           bird.draw(ctx);
           cancelAnimationFrame(animationId);
-          onGameOver(scoreRef.current);
+          onGameOver(finalScore);
         });
         return;
       }
