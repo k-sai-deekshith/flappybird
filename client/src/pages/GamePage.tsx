@@ -5,10 +5,11 @@ import { useGame } from "@/hooks/use-game";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GameInstructions from "@/components/GameInstructions";
 import ProfileDropdown from "@/components/ProfileDropdown";
 import { useUser } from "@/hooks/use-user";
+import confetti from 'canvas-confetti';
 
 export default function GamePage() {
   const { user } = useUser();
@@ -25,6 +26,37 @@ export default function GamePage() {
   } = useGame();
 
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+
+  // Fire confetti when game ends with a new high score
+  useEffect(() => {
+    if (gameOver && finalScore > highScore) {
+      const duration = 2000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.8 },
+          colors: ['#ffd700', '#ffa500', '#ff4500']
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.8 },
+          colors: ['#ffd700', '#ffa500', '#ff4500']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+
+      frame();
+    }
+  }, [gameOver, finalScore, highScore]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-400 to-sky-200">
@@ -104,7 +136,9 @@ export default function GamePage() {
       <Dialog open={gameOver} onOpenChange={(open) => !open && restartGame()}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Game Over!</DialogTitle>
+            <DialogTitle>
+              {finalScore > highScore ? "New High Score! 🎉" : "Game Over!"}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 py-4">
