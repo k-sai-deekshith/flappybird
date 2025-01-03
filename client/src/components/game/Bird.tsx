@@ -78,7 +78,6 @@ export default class Bird {
       return particle.update();
     });
 
-    // Draw bird with rotation based on velocity
     ctx.save();
     ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 
@@ -88,18 +87,22 @@ export default class Bird {
 
     const colors = BIRD_STYLES[this.style];
 
-    // Draw western-themed bird (cowboy hat and bandana)
+    // Draw bird body
     ctx.fillStyle = colors.body;
-    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.beginPath();
+    ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.fill();
 
-    // Cowboy hat
+    // Draw hat
     ctx.fillStyle = colors.hat;
-    ctx.fillRect(-this.width / 2, -this.height / 2 - 8, this.width * 0.8, 8);
-    ctx.fillRect(-this.width / 3, -this.height / 2 - 12, this.width * 0.6, 4);
+    // Hat brim
+    ctx.fillRect(-this.width / 2, -this.height / 2 - 8, this.width, 8);
+    // Hat top
+    ctx.fillRect(-this.width / 3, -this.height / 2 - 14, this.width * 0.66, 6);
 
-    // Bandana
+    // Draw bandana
     ctx.fillStyle = colors.bandana;
-    ctx.fillRect(-this.width / 2, -this.height / 4, this.width, 6);
+    ctx.fillRect(-this.width / 2, -this.height / 6, this.width, 6);
 
     // Eye
     ctx.fillStyle = '#000';
