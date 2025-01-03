@@ -183,14 +183,29 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
     };
 
     const drawBackground = () => {
-      // Sky gradient
+      // Dramatic sunset sky gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      gradient.addColorStop(0, '#87CEEB'); // Sky blue
-      gradient.addColorStop(1, '#E6B980'); // Desert sand
+      gradient.addColorStop(0, '#FF6B6B'); // Warm sunset red
+      gradient.addColorStop(0.3, '#FFD93D'); // Golden yellow
+      gradient.addColorStop(0.6, '#4D96FF'); // Sky blue
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Static Mountains
+      // Far mountains (darker)
+      ctx.fillStyle = '#6B4423';
+      ctx.beginPath();
+      ctx.moveTo(0, CANVAS_HEIGHT - 250);
+      for (let x = 0; x < CANVAS_WIDTH; x += 70) {
+        ctx.lineTo(
+          x,
+          CANVAS_HEIGHT - 250 + Math.sin(x * 0.01) * 60
+        );
+      }
+      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.fill();
+
+      // Mid mountains
       ctx.fillStyle = '#8B4513';
       ctx.beginPath();
       ctx.moveTo(0, CANVAS_HEIGHT - 200);
@@ -204,18 +219,48 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ctx.lineTo(0, CANVAS_HEIGHT);
       ctx.fill();
 
-      // Static Ground
-      ctx.fillStyle = '#DEB887';
+      // Near mountains
+      ctx.fillStyle = '#A0522D';
+      ctx.beginPath();
+      ctx.moveTo(0, CANVAS_HEIGHT - 150);
+      for (let x = 0; x < CANVAS_WIDTH; x += 30) {
+        ctx.lineTo(
+          x,
+          CANVAS_HEIGHT - 150 + Math.sin(x * 0.03) * 40
+        );
+      }
+      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.fill();
+
+      // Desert ground with dunes
+      const groundGradient = ctx.createLinearGradient(0, CANVAS_HEIGHT - 112, 0, CANVAS_HEIGHT);
+      groundGradient.addColorStop(0, '#DAA520'); // Golden sand
+      groundGradient.addColorStop(1, '#CD853F'); // Darker sand
+      ctx.fillStyle = groundGradient;
       ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH, 112);
 
-      // Ground texture
-      ctx.strokeStyle = '#8B4513';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < CANVAS_WIDTH; x += 30) {
+      // Sand dune details
+      ctx.strokeStyle = 'rgba(139, 69, 19, 0.3)';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < CANVAS_WIDTH; x += 40) {
         ctx.beginPath();
         ctx.moveTo(x, CANVAS_HEIGHT - 112);
-        ctx.lineTo(x + 15, CANVAS_HEIGHT - 90);
+        ctx.quadraticCurveTo(
+          x + 20,
+          CANVAS_HEIGHT - 90,
+          x + 40,
+          CANVAS_HEIGHT - 112
+        );
         ctx.stroke();
+      }
+
+      // Heat haze effect
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      for (let x = 0; x < CANVAS_WIDTH; x += 100) {
+        const time = Date.now() * 0.001;
+        const y = CANVAS_HEIGHT - 130 + Math.sin(x * 0.02 + time) * 5;
+        ctx.fillRect(x, y, 50, 2);
       }
 
       // Moving Clouds
