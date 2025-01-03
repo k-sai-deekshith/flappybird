@@ -161,7 +161,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ctx.save();
       ctx.translate(tumbleweed.x, tumbleweed.y);
       ctx.rotate(tumbleweed.rotation);
-      ctx.fillStyle = '#8B4513';
+      ctx.fillStyle = '#D2B48C'; // Changed to tan color for better visibility
       ctx.beginPath();
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI * 2;
@@ -172,6 +172,12 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       }
       ctx.closePath();
       ctx.fill();
+
+      // Add darker outline for better definition
+      ctx.strokeStyle = '#A0522D';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
       ctx.restore();
     };
 
