@@ -64,6 +64,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
     const handleInput = () => {
       if (isPlaying && bird) {
         bird.velocity = settings.JUMP_FORCE;
+        bird.addParticles('flap');
         audioManager.playSound('flap');
       }
     };
@@ -97,25 +98,53 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
 
     let animationId: number;
 
-    const gameLoop = () => {
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-      // Background
-      ctx.fillStyle = "#70c5ce";
+    const drawBackground = () => {
+      // Sky gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+      gradient.addColorStop(0, '#87CEEB'); // Sky blue
+      gradient.addColorStop(1, '#E6B980'); // Desert sand
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+      // Desert mountains
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath();
+      ctx.moveTo(0, CANVAS_HEIGHT - 200);
+      for (let x = 0; x < CANVAS_WIDTH; x += 50) {
+        ctx.lineTo(
+          x,
+          CANVAS_HEIGHT - 200 + Math.sin(x * 0.02) * 50
+        );
+      }
+      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.fill();
+
       // Ground
-      ctx.fillStyle = "#ded895";
+      ctx.fillStyle = '#DEB887';
       ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH, 112);
+
+      // Ground texture
+      ctx.strokeStyle = '#8B4513';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < CANVAS_WIDTH; x += 30) {
+        ctx.beginPath();
+        ctx.moveTo(x, CANVAS_HEIGHT - 112);
+        ctx.lineTo(x + 15, CANVAS_HEIGHT - 90);
+        ctx.stroke();
+      }
+    };
+
+    const gameLoop = () => {
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      drawBackground();
 
       const bird = birdRef.current;
       if (!bird) return;
 
-      // Update bird with difficulty-based gravity
       bird.velocity += settings.GRAVITY;
       bird.y += bird.velocity;
 
-      // Generate pipes with difficulty-based spacing
       if (frameRef.current % 100 === 0) {
         const pipeY = Math.random() * (CANVAS_HEIGHT - settings.GAP_HEIGHT - 200) + 100;
         pipesRef.current.push(
@@ -123,12 +152,10 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
         );
       }
 
-      // Update and draw pipes with difficulty-based speed
       pipesRef.current = pipesRef.current.filter((pipe) => {
         pipe.x -= settings.PIPE_SPEED;
         pipe.draw(ctx);
 
-        // Score when passing pipe
         if (pipe.x + PIPE_WIDTH < bird.x && !pipe.passed) {
           pipe.passed = true;
           scoreRef.current++;
@@ -139,19 +166,23 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
         return pipe.x > -PIPE_WIDTH;
       });
 
-      // Draw bird
       bird.draw(ctx);
 
-      // Collision detection
       if (
         bird.y < 0 ||
         bird.y + bird.height > CANVAS_HEIGHT - 112 ||
         pipesRef.current.some((pipe) => pipe.collidesWith(bird))
       ) {
+        bird.addParticles('hit');
         audioManager.playSound('hit');
         audioManager.stopBackgroundMusic();
-        cancelAnimationFrame(animationId);
-        onGameOver(scoreRef.current);
+
+        // Draw one last frame to show collision particles
+        requestAnimationFrame(() => {
+          bird.draw(ctx);
+          cancelAnimationFrame(animationId);
+          onGameOver(scoreRef.current);
+        });
         return;
       }
 
@@ -171,7 +202,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ref={canvasRef}
       width={CANVAS_WIDTH}
       height={CANVAS_HEIGHT}
-      className="border shadow-lg"
+      className="border shadow-lg rounded-lg"
     />
   );
 }
