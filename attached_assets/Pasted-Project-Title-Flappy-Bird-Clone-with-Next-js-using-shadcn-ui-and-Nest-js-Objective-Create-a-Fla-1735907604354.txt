@@ -1,0 +1,96 @@
+Project Title: Flappy Bird Clone with Next.js (using shadcn/ui) and Nest.js
+
+Objective:
+Create a Flappy Bird–style game that runs in the browser (front end with Next.js and shadcn/ui) and stores high scores and user data on a Nest.js backend.
+
+1. Overall Requirements
+Gameplay Mechanics
+
+Single-tap (or mouse-click/keyboard-press) input that causes the bird to flap and move upward.
+Gravity pulls the bird downward when not flapping.
+Pipes appear in pairs with a consistent gap size; their vertical position is randomized.
+Colliding with a pipe or the ground ends the game.
+Score increments by 1 for each pair of pipes passed.
+Front End (Next.js + shadcn/ui)
+
+Use Next.js (latest version) as the React framework.
+Incorporate shadcn/ui components to create a polished, modern UI.
+The main game screen should be an HTML canvas or a suitable game surface where Flappy Bird mechanics are rendered.
+Include a simple landing page or game menu:
+“Play Game” button
+“View Leaderboard” button
+Leaderboards/High Score Page:
+Display a list of top scores pulled from the Nest.js backend.
+Optionally, allow for a user authentication flow (using NextAuth or a custom solution) to track individual user scores.
+Backend (Nest.js)
+
+Provide an API to store and retrieve high scores (e.g., /scores endpoint).
+Use a simple database (e.g., PostgreSQL, MongoDB, or an in-memory database for demonstration) to store user scores.
+Basic user management (if you choose to implement authentication).
+Ensure the API follows REST best practices or Nest.js recommended conventions.
+Game Engine/Loop
+
+Implement or integrate a game loop that handles:
+Rendering the bird and pipes at each frame.
+Updating physics (gravity and pipe movement).
+Checking collisions.
+Keep all game logic in the front end so the user can play in real-time.
+Scoring & Leaderboard Logic
+
+When the game ends, prompt the user for a name or use an authenticated identity.
+Send the final score to the Nest.js backend to be recorded.
+The leaderboard page fetches and displays the highest scores.
+Responsive Design
+
+Ensure the game is playable on both desktop and mobile devices.
+The UI (via shadcn/ui) should adapt to various screen sizes.
+Bonus Features (Optional)
+
+Sound effects (wing flap, collision, point scoring) using HTML5 audio or a suitable audio library.
+Animations for the bird sprite and parallax scrolling background.
+Difficulty settings (e.g., adjusting pipe speed, gravity, or gap size over time).
+Deployable versions for both the frontend (on Vercel) and the backend (on a suitable platform like Heroku or AWS).
+2. Technical Details & Requests
+Project Structure
+
+Monorepo (optional) with separate frontend (Next.js) and backend (Nest.js) folders.
+If not a monorepo, ensure clear instructions for running each part.
+Shadcn/UI Integration
+
+Use shadcn/ui for the main layout, buttons, modals, and general styling.
+Provide a visually appealing design, consistent with modern UI trends.
+Implementation Steps
+
+Initialize Next.js Project:
+Install Next.js, TypeScript, ESLint, Prettier, etc.
+Add shadcn/ui components for styling.
+Canvas/Game Setup:
+Create a Game component that handles rendering the bird, pipes, and background.
+Implement a game loop with requestAnimationFrame or a similar approach.
+Physics & Collision Detection:
+Write or import a small physics utility for gravity and velocity.
+Check collisions with pipe bounding boxes and ground boundaries.
+Score Handling:
+Once the bird successfully passes a pair of pipes, increment the score in a state variable.
+On game over, prompt the user or automatically open a “Game Over” modal.
+Nest.js Backend:
+Create a Nest.js service with CRUD endpoints for scores.
+Connect to a database (PostgreSQL, MongoDB, or in-memory).
+Create a POST route to store new scores (e.g., POST /scores).
+Create a GET route to retrieve top scores (e.g., GET /scores/top).
+UI & Leaderboard:
+In Next.js, build a “Leaderboard” page that fetches data from GET /scores/top.
+Display the top scores in a shadcn/ui table or list component.
+Testing & Deployment
+
+Provide or generate a set of tests (e2e, unit tests) to ensure game mechanics and API endpoints work properly.
+Include instructions for deployment to common hosting platforms (Vercel, Netlify, Heroku, etc.).
+Deliverables
+
+A Git repository or folder structure containing both the Next.js (with shadcn/ui) project and the Nest.js backend.
+Clear documentation (README) on how to install dependencies, run the development server(s), and build the project.
+3. What to Output
+Step-by-step explanations of how you (the AI) generate each portion of code.
+Source code for the full-stack application—both frontend (Next.js, shadcn/ui) and backend (Nest.js).
+Implementation details of the Flappy Bird core mechanics (physics, collision detection, rendering).
+Any recommended improvements or optimizations for performance and code cleanliness.
