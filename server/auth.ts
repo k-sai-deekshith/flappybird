@@ -31,7 +31,7 @@ const crypto = {
 // extend express user object with our schema
 declare global {
   namespace Express {
-    interface User extends SelectUser { }
+    interface User extends SelectUser {}
   }
 }
 
@@ -109,6 +109,14 @@ export function setupAuth(app: Express) {
 
       const { username, password } = result.data;
 
+      if (!username || username.length < 3) {
+        return res.status(400).send("Username must be at least 3 characters long");
+      }
+
+      if (!password || password.length < 6) {
+        return res.status(400).send("Password must be at least 6 characters long");
+      }
+
       // Check if user already exists
       const [existingUser] = await db
         .select()
@@ -129,6 +137,7 @@ export function setupAuth(app: Express) {
         .values({
           username,
           password: hashedPassword,
+          avatar: 'cowboy', // Set default avatar
         })
         .returning();
 
@@ -139,7 +148,7 @@ export function setupAuth(app: Express) {
         }
         return res.json({
           message: "Registration successful",
-          user: { id: newUser.id, username: newUser.username },
+          user: { id: newUser.id, username: newUser.username, avatar: newUser.avatar },
         });
       });
     } catch (error) {
@@ -171,7 +180,7 @@ export function setupAuth(app: Express) {
 
         return res.json({
           message: "Login successful",
-          user: { id: user.id, username: user.username },
+          user: { id: user.id, username: user.username, avatar: user.avatar },
         });
       });
     };
