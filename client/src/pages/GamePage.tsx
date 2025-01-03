@@ -26,7 +26,6 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-400 to-sky-200">
-      {/* Header */}
       <header className="w-full bg-black/10 backdrop-blur-sm py-4 z-20">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Wild West Flappy Bird</h1>
@@ -43,13 +42,13 @@ export default function GamePage() {
         </div>
       </header>
 
-      {/* Game Canvas Container */}
       <div className="flex-grow relative">
         <GameCanvas 
           onGameOver={handleGameOver} 
           onScoreChange={setScore}
           isPlaying={isPlaying} 
           difficulty={difficulty}
+          highScore={highScore}
         />
 
         {!isPlaying && !gameOver && (
@@ -92,7 +91,6 @@ export default function GamePage() {
         )}
       </div>
 
-      {/* Footer */}
       <footer className="w-full bg-black/10 backdrop-blur-sm py-4 z-20">
         <div className="container mx-auto px-4 text-center text-white/80">
           <p>© 2025 Wild West Flappy Bird. All rights reserved.</p>

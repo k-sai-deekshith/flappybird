@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Bird from "./Bird";
 import Pipe from "./Pipe";
 import { audioManager } from "./AudioManager";
+import confetti from 'canvas-confetti';
 
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
@@ -62,9 +63,16 @@ interface GameCanvasProps {
   onScoreChange: (score: number) => void;
   isPlaying: boolean;
   difficulty: Difficulty;
+  highScore: number;  // Add highScore prop
 }
 
-export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, difficulty }: GameCanvasProps) {
+export default function GameCanvas({ 
+  onGameOver, 
+  onScoreChange, 
+  isPlaying, 
+  difficulty,
+  highScore 
+}: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const birdRef = useRef<Bird | null>(null);
   const pipesRef = useRef<Pipe[]>([]);
@@ -311,9 +319,19 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
 
         if (pipe.x + PIPE_WIDTH < bird.x && !pipe.passed) {
           pipe.passed = true;
-          scoreRef.current++;
-          onScoreChange(scoreRef.current);
+          const newScore = scoreRef.current + 1;
+          scoreRef.current = newScore;
+          onScoreChange(newScore);
           audioManager.playSound('point');
+
+          // Trigger confetti when score exceeds high score
+          if (newScore > highScore) {
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }
         }
 
         return pipe.x > -PIPE_WIDTH;
@@ -349,7 +367,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isPlaying, onGameOver, onScoreChange, settings]);
+  }, [isPlaying, onGameOver, onScoreChange, settings, highScore]); // Add highScore to dependencies
 
   return (
     <canvas
