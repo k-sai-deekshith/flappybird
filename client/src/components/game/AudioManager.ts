@@ -2,9 +2,11 @@ export class AudioManager {
   private context: AudioContext;
   private sounds: Map<string, AudioBuffer>;
   private bgMusic: {
-    oscillator: OscillatorNode;
-    modulator: OscillatorNode;
-    musicGain: GainNode;
+    melody: OscillatorNode[];
+    harmony: OscillatorNode[];
+    gains: GainNode[];
+    lfo: OscillatorNode;
+    masterGain: GainNode;
   } | null;
   private gainNode: GainNode;
 
@@ -102,65 +104,121 @@ export class AudioManager {
     source.start();
   }
 
+  private createOscillator(frequency: number, type: OscillatorType = 'sine'): OscillatorNode {
+    const osc = this.context.createOscillator();
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, this.context.currentTime);
+    return osc;
+  }
+
   public startBackgroundMusic() {
     if (this.bgMusic) return;
 
-    // Create a western/cowboy style background music
-    const oscillator = this.context.createOscillator();
-    oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(220, this.context.currentTime); // A3 note
+    const masterGain = this.context.createGain();
+    masterGain.gain.setValueAtTime(0.15, this.context.currentTime);
 
-    // Add tremolo effect for western feel
-    const modulator = this.context.createOscillator();
-    modulator.type = 'sine';
-    modulator.frequency.setValueAtTime(4, this.context.currentTime); // 4Hz tremolo
+    // Western-style melody using pentatonic scale
+    const melodyNotes = [
+      220.00, // A3
+      246.94, // B3
+      293.66, // D4
+      329.63, // E4
+      392.00  // G4
+    ];
 
-    const modulatorGain = this.context.createGain();
-    modulatorGain.gain.setValueAtTime(20, this.context.currentTime);
+    // Create melody oscillators
+    const melody = melodyNotes.map(freq => this.createOscillator(freq, 'sine'));
+    const gains = melody.map(() => {
+      const gain = this.context.createGain();
+      gain.gain.setValueAtTime(0, this.context.currentTime);
+      return gain;
+    });
 
-    // Create rhythm using periodic gain changes
-    const musicGain = this.context.createGain();
-    musicGain.gain.setValueAtTime(0.1, this.context.currentTime);
+    // Create harmony oscillators (one octave lower)
+    const harmony = melodyNotes.map(freq => 
+      this.createOscillator(freq * 0.5, 'triangle')
+    );
 
-    // Connect western style effects chain
-    modulator.connect(modulatorGain);
-    modulatorGain.connect(oscillator.frequency);
-    oscillator.connect(musicGain);
-    musicGain.connect(this.gainNode);
+    // Tremolo LFO for western feel
+    const lfo = this.context.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(5, this.context.currentTime);
 
-    // Start the oscillators
-    oscillator.start();
-    modulator.start();
+    const lfoGain = this.context.createGain();
+    lfoGain.gain.setValueAtTime(0.15, this.context.currentTime);
 
-    // Store references for cleanup
-    this.bgMusic = { oscillator, modulator, musicGain };
+    // Connect everything
+    lfo.connect(lfoGain);
+    lfoGain.connect(masterGain.gain);
 
-    // Add western rhythm pattern
-    this.startWesternRhythm(musicGain);
+    melody.forEach((osc, i) => {
+      osc.connect(gains[i]);
+      gains[i].connect(masterGain);
+    });
+
+    harmony.forEach((osc, i) => {
+      osc.connect(gains[i]);
+    });
+
+    masterGain.connect(this.gainNode);
+
+    // Start all oscillators
+    [...melody, ...harmony, lfo].forEach(osc => osc.start());
+
+    this.bgMusic = {
+      melody,
+      harmony,
+      gains,
+      lfo,
+      masterGain
+    };
+
+    // Start the western melody pattern
+    this.playWesternMelody();
   }
 
-  private startWesternRhythm(gainNode: GainNode) {
-    const rhythm = [0.2, 0.1, 0.15, 0.1]; // Western-style rhythm pattern
-    let step = 0;
+  private playWesternMelody() {
+    if (!this.bgMusic) return;
 
-    const rhythmInterval = setInterval(() => {
+    const pattern = [
+      [0, 2, 4], // Root chord
+      [1, 3],    // Walking notes
+      [2, 4],    // Higher harmony
+      [0, 3],    // Resolution
+    ];
+
+    let step = 0;
+    const interval = setInterval(() => {
       if (!this.bgMusic) {
-        clearInterval(rhythmInterval);
+        clearInterval(interval);
         return;
       }
 
-      const time = this.context.currentTime;
-      gainNode.gain.setValueAtTime(rhythm[step], time);
-      step = (step + 1) % rhythm.length;
-    }, 300); // 300ms between rhythm steps
+      // Reset all gains
+      this.bgMusic.gains.forEach(gain => {
+        gain.gain.setTargetAtTime(0, this.context.currentTime, 0.1);
+      });
+
+      // Activate notes for current step
+      pattern[step].forEach(noteIndex => {
+        this.bgMusic.gains[noteIndex].gain.setTargetAtTime(0.2, this.context.currentTime, 0.1);
+      });
+
+      step = (step + 1) % pattern.length;
+    }, 600); // Slower tempo for more musical feel
   }
 
   public stopBackgroundMusic() {
     if (this.bgMusic) {
-      const { oscillator, modulator, musicGain } = this.bgMusic;
-      oscillator.stop();
-      modulator.stop();
-      musicGain.disconnect();
+      const { melody, harmony, lfo, masterGain } = this.bgMusic;
+      [...melody, ...harmony, lfo].forEach(osc => {
+        try {
+          osc.stop();
+        } catch (e) {
+          // Ignore already stopped oscillators
+        }
+      });
+      masterGain.disconnect();
       this.bgMusic = null;
     }
   }
