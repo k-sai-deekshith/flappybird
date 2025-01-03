@@ -5,23 +5,50 @@ import { audioManager } from "./AudioManager";
 
 const CANVAS_WIDTH = 480;
 const CANVAS_HEIGHT = 640;
-const GRAVITY = 0.5;
-const JUMP_FORCE = -8;
-const PIPE_SPACING = 200;
+
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    GRAVITY: 0.4,
+    JUMP_FORCE: -7,
+    PIPE_SPEED: 1.5,
+    GAP_HEIGHT: 160,
+    PIPE_SPACING: 220,
+  },
+  medium: {
+    GRAVITY: 0.5,
+    JUMP_FORCE: -8,
+    PIPE_SPEED: 2,
+    GAP_HEIGHT: 150,
+    PIPE_SPACING: 200,
+  },
+  hard: {
+    GRAVITY: 0.6,
+    JUMP_FORCE: -8.5,
+    PIPE_SPEED: 2.5,
+    GAP_HEIGHT: 140,
+    PIPE_SPACING: 180,
+  },
+};
+
 const PIPE_WIDTH = 52;
-const GAP_HEIGHT = 150;
 
 interface GameCanvasProps {
   onGameOver: (score: number) => void;
   isPlaying: boolean;
+  difficulty: Difficulty;
 }
 
-export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
+export default function GameCanvas({ onGameOver, isPlaying, difficulty }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const birdRef = useRef<Bird | null>(null);
   const pipesRef = useRef<Pipe[]>([]);
   const scoreRef = useRef(0);
   const frameRef = useRef(0);
+
+  // Get difficulty settings
+  const settings = DIFFICULTY_SETTINGS[difficulty];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,7 +62,7 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
 
     const handleInput = () => {
       if (isPlaying && bird) {
-        bird.velocity = JUMP_FORCE;
+        bird.velocity = settings.JUMP_FORCE;
         audioManager.playSound('flap');
       }
     };
@@ -47,7 +74,7 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
       canvas.removeEventListener("click", handleInput);
       document.removeEventListener("keydown", handleInput);
     };
-  }, [isPlaying]);
+  }, [isPlaying, settings.JUMP_FORCE]);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -58,7 +85,6 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
       return;
     }
 
-    // Start background music when game starts
     audioManager.startBackgroundMusic();
 
     const canvas = canvasRef.current;
@@ -83,21 +109,21 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
       const bird = birdRef.current;
       if (!bird) return;
 
-      // Update bird
-      bird.velocity += GRAVITY;
+      // Update bird with difficulty-based gravity
+      bird.velocity += settings.GRAVITY;
       bird.y += bird.velocity;
 
-      // Generate pipes
+      // Generate pipes with difficulty-based spacing
       if (frameRef.current % 100 === 0) {
-        const pipeY = Math.random() * (CANVAS_HEIGHT - GAP_HEIGHT - 200) + 100;
+        const pipeY = Math.random() * (CANVAS_HEIGHT - settings.GAP_HEIGHT - 200) + 100;
         pipesRef.current.push(
-          new Pipe(CANVAS_WIDTH, pipeY, PIPE_WIDTH, GAP_HEIGHT)
+          new Pipe(CANVAS_WIDTH, pipeY, PIPE_WIDTH, settings.GAP_HEIGHT)
         );
       }
 
-      // Update and draw pipes
+      // Update and draw pipes with difficulty-based speed
       pipesRef.current = pipesRef.current.filter((pipe) => {
-        pipe.x -= 2;
+        pipe.x -= settings.PIPE_SPEED;
         pipe.draw(ctx);
 
         // Score when passing pipe
@@ -135,7 +161,7 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isPlaying, onGameOver]);
+  }, [isPlaying, onGameOver, settings]);
 
   return (
     <canvas
