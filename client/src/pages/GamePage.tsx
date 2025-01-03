@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import GameInstructions from "@/components/GameInstructions";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import { useUser } from "@/hooks/use-user";
 
 export default function GamePage() {
+  const { user } = useUser();
   const { 
     score,
     setScore,
@@ -49,6 +51,7 @@ export default function GamePage() {
           isPlaying={isPlaying} 
           difficulty={difficulty}
           highScore={highScore}
+          birdStyle={user?.avatar}
         />
 
         {!isPlaying && !gameOver && (

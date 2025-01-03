@@ -63,7 +63,8 @@ interface GameCanvasProps {
   onScoreChange: (score: number) => void;
   isPlaying: boolean;
   difficulty: Difficulty;
-  highScore: number;  // Add highScore prop
+  highScore: number;
+  birdStyle?: string;  
 }
 
 export default function GameCanvas({ 
@@ -71,7 +72,8 @@ export default function GameCanvas({
   onScoreChange, 
   isPlaying, 
   difficulty,
-  highScore 
+  highScore,
+  birdStyle = 'cowboy'
 }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const birdRef = useRef<Bird | null>(null);
@@ -92,7 +94,7 @@ export default function GameCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const bird = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2);
+    const bird = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle as any);
     birdRef.current = bird;
 
     // Initialize background elements
@@ -134,11 +136,11 @@ export default function GameCanvas({
       canvas.removeEventListener("click", handleInput);
       document.removeEventListener("keydown", handleInput);
     };
-  }, [isPlaying, settings.JUMP_FORCE]);
+  }, [isPlaying, settings.JUMP_FORCE, birdStyle]);
 
   useEffect(() => {
     if (!isPlaying) {
-      birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2);
+      birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2, birdStyle as any);
       pipesRef.current = [];
       scoreRef.current = 0;
       onScoreChange(0);
@@ -367,7 +369,7 @@ export default function GameCanvas({
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isPlaying, onGameOver, onScoreChange, settings, highScore]); // Add highScore to dependencies
+  }, [isPlaying, onGameOver, onScoreChange, settings, highScore, birdStyle]);
 
   return (
     <canvas

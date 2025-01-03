@@ -1,5 +1,12 @@
 import Particle, { type ParticleConfig } from './Particle';
 
+const BIRD_STYLES = {
+  cowboy: { body: '#f4ce42', hat: '#8b4513', bandana: '#cd5c5c' },
+  sheriff: { body: '#e6b800', hat: '#654321', bandana: '#483d8b' },
+  bandit: { body: '#4a4a4a', hat: '#1a1a1a', bandana: '#8b0000' },
+  prospector: { body: '#deb887', hat: '#966f33', bandana: '#daa520' },
+};
+
 export default class Bird {
   x: number;
   y: number;
@@ -9,8 +16,9 @@ export default class Bird {
   private rotation: number;
   private particles: Particle[];
   private flapAnimation: number;
+  private style: keyof typeof BIRD_STYLES;
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, style: keyof typeof BIRD_STYLES = 'cowboy') {
     this.x = x;
     this.y = y;
     this.width = 34;
@@ -19,6 +27,11 @@ export default class Bird {
     this.rotation = 0;
     this.particles = [];
     this.flapAnimation = 0;
+    this.style = style;
+  }
+
+  setStyle(style: keyof typeof BIRD_STYLES) {
+    this.style = style;
   }
 
   addParticles(type: 'flap' | 'hit') {
@@ -43,7 +56,7 @@ export default class Bird {
         configs.push({
           x: this.x + this.width / 2,
           y: this.y + this.height / 2,
-          color: '#ffd700', // Golden feathers
+          color: BIRD_STYLES[this.style].body, // Use bird's color for feathers
           size: Math.random() * 4 + 2,
           speedX: (Math.random() - 0.5) * 6,
           speedY: (Math.random() - 0.5) * 6,
@@ -71,17 +84,19 @@ export default class Bird {
     this.rotation = Math.max(-0.5, Math.min(0.5, this.velocity * 0.05));
     ctx.rotate(this.rotation);
 
+    const colors = BIRD_STYLES[this.style];
+
     // Draw western-themed bird (cowboy hat and bandana)
-    ctx.fillStyle = '#f4ce42'; // Bird body
+    ctx.fillStyle = colors.body;
     ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 
     // Cowboy hat
-    ctx.fillStyle = '#8b4513'; // Brown hat
+    ctx.fillStyle = colors.hat;
     ctx.fillRect(-this.width / 2, -this.height / 2 - 8, this.width * 0.8, 8);
     ctx.fillRect(-this.width / 3, -this.height / 2 - 12, this.width * 0.6, 4);
 
     // Bandana
-    ctx.fillStyle = '#cd5c5c'; // Red bandana
+    ctx.fillStyle = colors.bandana;
     ctx.fillRect(-this.width / 2, -this.height / 4, this.width, 6);
 
     // Eye

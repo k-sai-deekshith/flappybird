@@ -46,6 +46,25 @@ export function registerRoutes(app: Express): Server {
     res.json(topScores);
   });
 
+  app.post("/api/user/avatar", async (req, res) => {
+    if (!req.user) {
+      return res.status(401).send("Not authenticated");
+    }
+
+    const { avatar } = req.body;
+    if (typeof avatar !== "string") {
+      return res.status(400).send("Invalid avatar style");
+    }
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({ avatar })
+      .where(eq(users.id, req.user.id))
+      .returning();
+
+    res.json(updatedUser);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
