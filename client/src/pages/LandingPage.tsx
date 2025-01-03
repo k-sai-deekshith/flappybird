@@ -20,24 +20,14 @@ export default function LandingPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-400 to-sky-200">
-        <header className="w-full bg-black/10 backdrop-blur-sm py-4">
-          <div className="container mx-auto px-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Wild West Flappy Bird</h1>
-            <GameInstructions />
-          </div>
-        </header>
-
         <main className="flex-grow flex flex-col items-center justify-center p-8">
           <div className="text-center mb-12">
             <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Wild West Flappy Bird
             </h1>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-xl text-white/90">
               Saddle up for an epic adventure!
             </p>
-            <div className="flex justify-center gap-4">
-              <GameInstructions />
-            </div>
           </div>
           <AuthPage />
         </main>
