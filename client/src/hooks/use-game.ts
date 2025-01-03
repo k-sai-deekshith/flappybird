@@ -7,6 +7,7 @@ export function useGame() {
   const [gameOver, setGameOver] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [highScore, setHighScore] = useState(0);
+  const [finalScore, setFinalScore] = useState(0);
   const { user } = useUser();
   const queryClient = useQueryClient();
 
@@ -31,14 +32,15 @@ export function useGame() {
   });
 
   const handleGameOver = useCallback(
-    async (finalScore: number) => {
-      setScore(finalScore);
+    async (score: number) => {
+      setFinalScore(score);
+      setScore(score);
       setGameOver(true);
       setIsPlaying(false);
-      setHighScore((prev) => Math.max(prev, finalScore));
+      setHighScore((prev) => Math.max(prev, score));
 
       if (user) {
-        await submitScore.mutateAsync(finalScore);
+        await submitScore.mutateAsync(score);
       }
     },
     [user, submitScore]
@@ -46,6 +48,7 @@ export function useGame() {
 
   const startGame = useCallback(() => {
     setScore(0);
+    setFinalScore(0);
     setGameOver(false);
     setIsPlaying(true);
   }, []);
@@ -53,6 +56,7 @@ export function useGame() {
   const restartGame = useCallback(() => {
     setGameOver(false);
     setScore(0);
+    setFinalScore(0);
     setIsPlaying(false);
   }, []);
 
@@ -61,6 +65,7 @@ export function useGame() {
     setScore,
     gameOver,
     highScore,
+    finalScore,
     isPlaying,
     startGame,
     restartGame,

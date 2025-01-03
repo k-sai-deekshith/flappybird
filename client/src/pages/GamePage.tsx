@@ -13,6 +13,7 @@ export default function GamePage() {
     setScore,
     gameOver,
     highScore,
+    finalScore,
     isPlaying,
     startGame,
     restartGame,
@@ -77,7 +78,7 @@ export default function GamePage() {
             <DialogTitle>Game Over!</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-lg">Score: {score}</p>
+            <p className="text-lg">Score: {finalScore}</p>
             <p className="text-sm text-muted-foreground">High Score: {highScore}</p>
             <div className="flex justify-end space-x-2">
               <Button onClick={restartGame}>Play Again</Button>
