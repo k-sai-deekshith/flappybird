@@ -25,6 +25,9 @@ export default function GamePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-sky-400 to-sky-200">
       <div className="fixed top-4 right-4 flex gap-4">
+        <Link href="/">
+          <Button variant="secondary">Back to Menu</Button>
+        </Link>
         <Link href="/leaderboard">
           <Button variant="secondary">Leaderboard</Button>
         </Link>

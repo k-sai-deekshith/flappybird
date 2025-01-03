@@ -1,13 +1,13 @@
 import { Switch, Route } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useUser } from "./hooks/use-user";
+import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
-import AuthPage from "./pages/AuthPage";
-import { useUser } from "./hooks/use-user";
 
 function App() {
-  const { user, isLoading } = useUser();
+  const { isLoading } = useUser();
 
   if (isLoading) {
     return (
@@ -17,13 +17,10 @@ function App() {
     );
   }
 
-  if (!user) {
-    return <AuthPage />;
-  }
-
   return (
     <Switch>
-      <Route path="/" component={GamePage} />
+      <Route path="/" component={LandingPage} />
+      <Route path="/game" component={GamePage} />
       <Route path="/leaderboard" component={LeaderboardPage} />
       <Route component={NotFound} />
     </Switch>
