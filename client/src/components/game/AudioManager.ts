@@ -115,37 +115,40 @@ export class AudioManager {
     if (this.bgMusic) return;
 
     const masterGain = this.context.createGain();
-    masterGain.gain.setValueAtTime(0.15, this.context.currentTime);
+    masterGain.gain.setValueAtTime(0.1, this.context.currentTime); // Reduced overall volume
 
-    // Western-style melody using pentatonic scale
+    // Western-style melody using pentatonic scale (common in cowboy music)
     const melodyNotes = [
+      196.00, // G3
       220.00, // A3
       246.94, // B3
       293.66, // D4
-      329.63, // E4
-      392.00  // G4
+      329.63  // E4
     ];
 
-    // Create melody oscillators
-    const melody = melodyNotes.map(freq => this.createOscillator(freq, 'sine'));
+    // Create melody oscillators with a mix of waveforms for richer texture
+    const melody = melodyNotes.map((freq, i) =>
+      this.createOscillator(freq, i % 2 === 0 ? 'triangle' : 'sine')
+    );
+
     const gains = melody.map(() => {
       const gain = this.context.createGain();
       gain.gain.setValueAtTime(0, this.context.currentTime);
       return gain;
     });
 
-    // Create harmony oscillators (one octave lower)
-    const harmony = melodyNotes.map(freq => 
+    // Create harmony oscillators (one octave lower) with different waveform
+    const harmony = melodyNotes.map(freq =>
       this.createOscillator(freq * 0.5, 'triangle')
     );
 
-    // Tremolo LFO for western feel
+    // Tremolo LFO for western guitar-like effect
     const lfo = this.context.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(5, this.context.currentTime);
+    lfo.frequency.setValueAtTime(6, this.context.currentTime); // Faster tremolo
 
     const lfoGain = this.context.createGain();
-    lfoGain.gain.setValueAtTime(0.15, this.context.currentTime);
+    lfoGain.gain.setValueAtTime(0.2, this.context.currentTime); // More pronounced tremolo
 
     // Connect everything
     lfo.connect(lfoGain);
@@ -180,11 +183,16 @@ export class AudioManager {
   private playWesternMelody() {
     if (!this.bgMusic) return;
 
+    // Western-style chord progression pattern
     const pattern = [
-      [0, 2, 4], // Root chord
-      [1, 3],    // Walking notes
-      [2, 4],    // Higher harmony
-      [0, 3],    // Resolution
+      [0, 2], // Root + Third
+      [1],    // Walking note
+      [2, 4], // Higher harmony
+      [0, 3], // Resolution
+      [4],    // High note accent
+      [2],    // Middle note
+      [1, 3], // Tension
+      [0],    // Back to root
     ];
 
     let step = 0;
@@ -194,18 +202,20 @@ export class AudioManager {
         return;
       }
 
-      // Reset all gains
+      // Reset all gains with a slight fade-out
       this.bgMusic.gains.forEach(gain => {
         gain.gain.setTargetAtTime(0, this.context.currentTime, 0.1);
       });
 
-      // Activate notes for current step
+      // Activate notes for current step with a slight fade-in
       pattern[step].forEach(noteIndex => {
-        this.bgMusic.gains[noteIndex].gain.setTargetAtTime(0.2, this.context.currentTime, 0.1);
+        if (this.bgMusic) {
+          this.bgMusic.gains[noteIndex].gain.setTargetAtTime(0.15, this.context.currentTime, 0.05);
+        }
       });
 
       step = (step + 1) % pattern.length;
-    }, 600); // Slower tempo for more musical feel
+    }, 400); // Adjusted tempo for a more natural feel
   }
 
   public stopBackgroundMusic() {
