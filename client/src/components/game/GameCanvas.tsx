@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import Bird from "./Bird";
 import Pipe from "./Pipe";
+import { audioManager } from "./AudioManager";
 
 const CANVAS_WIDTH = 480;
 const CANVAS_HEIGHT = 640;
@@ -35,6 +36,7 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
     const handleInput = () => {
       if (isPlaying && bird) {
         bird.velocity = JUMP_FORCE;
+        audioManager.playSound('flap');
       }
     };
 
@@ -52,8 +54,12 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
       birdRef.current = new Bird(CANVAS_WIDTH / 3, CANVAS_HEIGHT / 2);
       pipesRef.current = [];
       scoreRef.current = 0;
+      audioManager.stopBackgroundMusic();
       return;
     }
+
+    // Start background music when game starts
+    audioManager.startBackgroundMusic();
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -98,6 +104,7 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
         if (pipe.x + PIPE_WIDTH < bird.x && !pipe.passed) {
           pipe.passed = true;
           scoreRef.current++;
+          audioManager.playSound('point');
         }
 
         return pipe.x > -PIPE_WIDTH;
@@ -112,6 +119,8 @@ export default function GameCanvas({ onGameOver, isPlaying }: GameCanvasProps) {
         bird.y + bird.height > CANVAS_HEIGHT - 112 ||
         pipesRef.current.some((pipe) => pipe.collidesWith(bird))
       ) {
+        audioManager.playSound('hit');
+        audioManager.stopBackgroundMusic();
         cancelAnimationFrame(animationId);
         onGameOver(scoreRef.current);
         return;
