@@ -3,13 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -62,64 +55,61 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-400 to-sky-200 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{isLogin ? "Login" : "Register"}</CardTitle>
-          <CardDescription>
-            {isLogin
-              ? "Enter your credentials to continue"
-              : "Create an account to start playing"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="space-y-2">
-                <Button type="submit" className="w-full">
-                  {isLogin ? "Login" : "Register"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => setIsLogin(!isLogin)}
-                >
-                  {isLogin
-                    ? "Don't have an account? Register"
-                    : "Already have an account? Login"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="w-full max-w-sm mx-auto">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-semibold text-white mb-2">{isLogin ? "Login" : "Register"}</h2>
+        <p className="text-white/80">
+          {isLogin
+            ? "Enter your credentials to continue"
+            : "Create an account to start playing"}
+        </p>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Username</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-white/10 border-white/20 text-white placeholder:text-white/50" />
+                </FormControl>
+                <FormMessage className="text-red-300" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} className="bg-white/10 border-white/20 text-white placeholder:text-white/50" />
+                </FormControl>
+                <FormMessage className="text-red-300" />
+              </FormItem>
+            )}
+          />
+          <div className="space-y-2 pt-2">
+            <Button type="submit" className="w-full bg-white text-sky-600 hover:bg-white/90">
+              {isLogin ? "Login" : "Register"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full text-white hover:bg-white/10"
+              onClick={() => setIsLogin(!isLogin)}
+            >
+              {isLogin
+                ? "Don't have an account? Register"
+                : "Already have an account? Login"}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
