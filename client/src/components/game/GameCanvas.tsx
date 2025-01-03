@@ -194,43 +194,29 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       // Far mountains (darker)
       ctx.fillStyle = '#6B4423';
       ctx.beginPath();
-      ctx.moveTo(0, CANVAS_HEIGHT - 250);
-      for (let x = 0; x < CANVAS_WIDTH; x += 70) {
+      ctx.moveTo(-50, CANVAS_HEIGHT - 200);
+      for (let x = -50; x <= CANVAS_WIDTH + 50; x += 100) {
         ctx.lineTo(
           x,
-          CANVAS_HEIGHT - 250 + Math.sin(x * 0.01) * 60
+          CANVAS_HEIGHT - 200 + Math.sin(x * 0.015) * 70
         );
       }
-      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.lineTo(0, CANVAS_HEIGHT);
-      ctx.fill();
-
-      // Mid mountains
-      ctx.fillStyle = '#8B4513';
-      ctx.beginPath();
-      ctx.moveTo(0, CANVAS_HEIGHT - 200);
-      for (let x = 0; x < CANVAS_WIDTH; x += 50) {
-        ctx.lineTo(
-          x,
-          CANVAS_HEIGHT - 200 + Math.sin(x * 0.02) * 50
-        );
-      }
-      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.lineTo(CANVAS_WIDTH + 50, CANVAS_HEIGHT);
+      ctx.lineTo(-50, CANVAS_HEIGHT);
       ctx.fill();
 
       // Near mountains
-      ctx.fillStyle = '#A0522D';
+      ctx.fillStyle = '#8B4513';
       ctx.beginPath();
-      ctx.moveTo(0, CANVAS_HEIGHT - 150);
-      for (let x = 0; x < CANVAS_WIDTH; x += 30) {
+      ctx.moveTo(-50, CANVAS_HEIGHT - 150);
+      for (let x = -50; x <= CANVAS_WIDTH + 50; x += 60) {
         ctx.lineTo(
           x,
-          CANVAS_HEIGHT - 150 + Math.sin(x * 0.03) * 40
+          CANVAS_HEIGHT - 150 + Math.sin(x * 0.02) * 50
         );
       }
-      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
-      ctx.lineTo(0, CANVAS_HEIGHT);
+      ctx.lineTo(CANVAS_WIDTH + 50, CANVAS_HEIGHT);
+      ctx.lineTo(-50, CANVAS_HEIGHT);
       ctx.fill();
 
       // Desert ground with dunes
