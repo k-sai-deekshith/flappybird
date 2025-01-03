@@ -46,11 +46,11 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-400 to-sky-200">
       <header className="w-full bg-black/10 backdrop-blur-sm py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-white">Wild West Flappy Bird</h1>
+          <h1 className="text-2xl font-bold text-white">Wild West Flappy Bird</h1>
+          <div className="flex items-center gap-2">
             <GameInstructions />
+            <ProfileDropdown />
           </div>
-          <ProfileDropdown />
         </div>
       </header>
 

@@ -23,8 +23,16 @@ export default function GamePage() {
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-sky-400 to-sky-200">
-      <div className="fixed top-4 right-4 flex gap-4">
+    <div className="relative min-h-screen w-full overflow-hidden">
+      <GameCanvas 
+        onGameOver={handleGameOver} 
+        onScoreChange={setScore}
+        isPlaying={isPlaying} 
+        difficulty={difficulty}
+      />
+
+      {/* Overlay UI */}
+      <div className="fixed top-4 right-4 flex gap-4 z-10">
         <Link href="/">
           <Button variant="secondary">Back to Menu</Button>
         </Link>
@@ -33,15 +41,9 @@ export default function GamePage() {
         </Link>
       </div>
 
-      <div className="relative">
-        <GameCanvas 
-          onGameOver={handleGameOver} 
-          onScoreChange={setScore}
-          isPlaying={isPlaying} 
-          difficulty={difficulty}
-        />
-        {!isPlaying && !gameOver && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background/95 p-6 rounded-lg shadow-lg backdrop-blur">
+      {!isPlaying && !gameOver && (
+        <div className="fixed inset-0 flex items-center justify-center z-10">
+          <div className="bg-background/95 p-6 rounded-lg shadow-lg backdrop-blur">
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold mb-4">Select Difficulty</h2>
@@ -69,11 +71,14 @@ export default function GamePage() {
               </Button>
             </div>
           </div>
-        )}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-4xl font-bold text-white drop-shadow-md">
+        </div>
+      )}
+
+      {isPlaying && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 text-4xl font-bold text-white drop-shadow-md z-10">
           {score}
         </div>
-      </div>
+      )}
 
       <Dialog open={gameOver} onOpenChange={(open) => !open && restartGame()}>
         <DialogContent>

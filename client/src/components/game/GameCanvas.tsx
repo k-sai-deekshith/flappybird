@@ -3,8 +3,8 @@ import Bird from "./Bird";
 import Pipe from "./Pipe";
 import { audioManager } from "./AudioManager";
 
-const CANVAS_WIDTH = 480;
-const CANVAS_HEIGHT = 640;
+const CANVAS_WIDTH = window.innerWidth;
+const CANVAS_HEIGHT = window.innerHeight;
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -161,7 +161,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ctx.save();
       ctx.translate(tumbleweed.x, tumbleweed.y);
       ctx.rotate(tumbleweed.rotation);
-      ctx.fillStyle = '#D2B48C'; // Changed to tan color for better visibility
+      ctx.fillStyle = '#D2B48C';
       ctx.beginPath();
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI * 2;
@@ -191,9 +191,9 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
     const drawBackground = () => {
       // Dramatic sunset sky gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      gradient.addColorStop(0, '#FF6B6B'); // Warm sunset red
-      gradient.addColorStop(0.3, '#FFD93D'); // Golden yellow
-      gradient.addColorStop(0.6, '#4D96FF'); // Sky blue
+      gradient.addColorStop(0, '#FF6B6B');
+      gradient.addColorStop(0.3, '#FFD93D');
+      gradient.addColorStop(0.6, '#4D96FF');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -227,8 +227,8 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
 
       // Desert ground with dunes
       const groundGradient = ctx.createLinearGradient(0, CANVAS_HEIGHT - 112, 0, CANVAS_HEIGHT);
-      groundGradient.addColorStop(0, '#DAA520'); // Golden sand
-      groundGradient.addColorStop(1, '#CD853F'); // Darker sand
+      groundGradient.addColorStop(0, '#DAA520');
+      groundGradient.addColorStop(1, '#CD853F');
       ctx.fillStyle = groundGradient;
       ctx.fillRect(0, CANVAS_HEIGHT - 112, CANVAS_WIDTH, 112);
 
@@ -356,7 +356,7 @@ export default function GameCanvas({ onGameOver, onScoreChange, isPlaying, diffi
       ref={canvasRef}
       width={CANVAS_WIDTH}
       height={CANVAS_HEIGHT}
-      className="border shadow-lg rounded-lg"
+      className="fixed inset-0 w-full h-full"
     />
   );
 }
