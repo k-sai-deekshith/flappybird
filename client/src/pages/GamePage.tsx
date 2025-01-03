@@ -106,9 +106,20 @@ export default function GamePage() {
             <DialogTitle>Game Over!</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-lg">Score: {finalScore}</p>
-            <p className="text-sm text-muted-foreground">High Score: {highScore}</p>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-1">Score</p>
+                <p className="text-3xl font-bold">{finalScore}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-1">High Score</p>
+                <p className="text-3xl font-bold">{highScore}</p>
+              </div>
+            </div>
             <div className="flex justify-end space-x-2">
+              <Button variant="secondary" asChild>
+                <Link href="/">Back to Menu</Link>
+              </Button>
               <Button onClick={restartGame}>Play Again</Button>
             </div>
           </div>
