@@ -10,6 +10,7 @@ import GameInstructions from "@/components/GameInstructions";
 import ProfileDropdown from "@/components/ProfileDropdown";
 import { useUser } from "@/hooks/use-user";
 import confetti from 'canvas-confetti';
+import type { BirdStyle } from "@/components/game/Bird";
 
 export default function GamePage() {
   const { user } = useUser();
@@ -26,6 +27,7 @@ export default function GamePage() {
   } = useGame();
 
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const defaultBirdStyle: BirdStyle = 'cowboy';
 
   // Fire confetti when game ends with a new high score
   useEffect(() => {
@@ -83,7 +85,7 @@ export default function GamePage() {
           isPlaying={isPlaying} 
           difficulty={difficulty}
           highScore={highScore}
-          birdStyle={user?.avatar}
+          birdStyle={(user?.avatar as BirdStyle) || defaultBirdStyle}
         />
 
         {!isPlaying && !gameOver && (

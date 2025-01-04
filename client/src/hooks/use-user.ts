@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { InsertUser, SelectUser } from "@db/schema";
+import type { BirdStyle } from "@/components/game/Bird";
 
 type RequestResult = {
   ok: true;
@@ -11,7 +12,7 @@ type RequestResult = {
 async function handleRequest(
   url: string,
   method: string,
-  body?: InsertUser
+  body?: InsertUser | { avatar: BirdStyle }
 ): Promise<RequestResult> {
   try {
     const response = await fetch(url, {
@@ -87,6 +88,13 @@ export function useUser() {
     },
   });
 
+  const updateAvatarMutation = useMutation<RequestResult, Error, BirdStyle>({
+    mutationFn: (avatar) => handleRequest('/api/user/avatar', 'POST', { avatar }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+
   return {
     user,
     isLoading,
@@ -94,5 +102,6 @@ export function useUser() {
     login: loginMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
     register: registerMutation.mutateAsync,
+    updateAvatar: updateAvatarMutation.mutateAsync,
   };
 }
