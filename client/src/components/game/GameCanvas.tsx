@@ -321,14 +321,6 @@ export default function GameCanvas({
           scoreRef.current = newScore;
           onScoreChange(newScore);
           audioManager.playSound('point');
-
-          if (newScore > highScore) {
-            confetti({
-              particleCount: 100,
-              spread: 70,
-              origin: { y: 0.6 }
-            });
-          }
         }
 
         return pipe.x > -PIPE_WIDTH;
