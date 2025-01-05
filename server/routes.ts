@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { db } from "@db";
 import { scores, users } from "@db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, max } from "drizzle-orm";
 
 export function registerRoutes(app: Express): Server {
   setupAuth(app);
@@ -44,6 +44,22 @@ export function registerRoutes(app: Express): Server {
       .limit(10);
 
     res.json(topScores);
+  });
+
+  app.get("/api/scores/highest", async (req, res) => {
+    if (!req.user) {
+      return res.status(401).send("Not authenticated");
+    }
+
+    const result = await db
+      .select({
+        highScore: max(scores.score),
+      })
+      .from(scores)
+      .where(eq(scores.userId, req.user.id));
+
+    const highScore = result[0]?.highScore || 0;
+    res.json({ highScore });
   });
 
   app.post("/api/user/avatar", async (req, res) => {

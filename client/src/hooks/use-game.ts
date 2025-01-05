@@ -1,15 +1,22 @@
-import { useState, useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback, useEffect } from "react";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useUser } from "./use-user";
 
 export function useGame() {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [highScore, setHighScore] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const { user } = useUser();
   const queryClient = useQueryClient();
+
+  // Fetch the user's highest score
+  const { data: highScoreData } = useQuery({
+    queryKey: ["/api/scores/highest"],
+    enabled: !!user,
+  });
+
+  const highScore = highScoreData?.highScore || 0;
 
   const submitScore = useMutation({
     mutationFn: async (score: number) => {
@@ -28,6 +35,7 @@ export function useGame() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scores"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/scores/highest"] });
     },
   });
 
@@ -37,7 +45,6 @@ export function useGame() {
       setScore(score);
       setGameOver(true);
       setIsPlaying(false);
-      setHighScore((prev) => Math.max(prev, score));
 
       if (user) {
         await submitScore.mutateAsync(score);
