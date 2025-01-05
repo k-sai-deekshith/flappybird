@@ -8,7 +8,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { LogOut, Medal, User, Palette } from "lucide-react";
+import { LogOut, Medal, Palette } from "lucide-react";
 import { useState } from "react";
 import AvatarSelector from "./game/AvatarSelector";
 
@@ -31,12 +31,6 @@ export default function ProfileDropdown() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuItem asChild>
-            <Link href="/profile" className="flex items-center">
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem 
             className="flex items-center"
             onClick={() => setShowAvatarSelector(true)}
