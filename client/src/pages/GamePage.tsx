@@ -20,12 +20,13 @@ export default function GamePage() {
     highScore,
     finalScore,
     isPlaying,
+    difficulty,
+    setDifficulty,
     startGame,
     restartGame,
     handleGameOver
   } = useGame();
 
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const defaultBirdStyle: BirdStyle = 'cowboy';
 
   // Fire confetti when game ends with a new high score
@@ -103,7 +104,7 @@ export default function GamePage() {
                 <div>
                   <h2 className="text-xl font-bold mb-4">Select Difficulty</h2>
                   <RadioGroup
-                    defaultValue={difficulty}
+                    value={difficulty}
                     onValueChange={(value) => setDifficulty(value as Difficulty)}
                     className="flex flex-col space-y-2"
                   >
