@@ -41,9 +41,15 @@ export function setupAuth(app: Express) {
     secret: process.env.REPL_ID || "flappy-bird-secret",
     resave: false,
     saveUninitialized: false,
-    cookie: {},
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    },
     store: new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
+      dispose: function(key) {
+        // Clear related user data when session expires
+        console.log(`Session expired: ${key}`);
+      }
     }),
   };
 
@@ -51,6 +57,7 @@ export function setupAuth(app: Express) {
     app.set("trust proxy", 1);
     sessionSettings.cookie = {
       secure: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
     };
   }
 
@@ -92,8 +99,14 @@ export function setupAuth(app: Express) {
         .from(users)
         .where(eq(users.id, id))
         .limit(1);
+
+      if (!user) {
+        // If user not found, destroy the session
+        return done(null, false);
+      }
       done(null, user);
     } catch (err) {
+      // On error, destroy the session and pass the error
       done(err);
     }
   });
