@@ -32,14 +32,14 @@ export default function GamePage() {
   // Fire confetti when game ends with a new high score
   useEffect(() => {
     if (gameOver && finalScore > highScore) {
-      // Create a more dramatic celebration effect
-      const duration = 3000;
+      // Create a more modest celebration effect
+      const duration = 1500; // Reduced from 3000ms
       const end = Date.now() + duration;
 
       const frame = () => {
-        // Shoot confetti from both sides
+        // Shoot confetti from both sides with reduced particles
         confetti({
-          particleCount: 100,
+          particleCount: 30, // Reduced from 100
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.8 },
@@ -47,10 +47,10 @@ export default function GamePage() {
           startVelocity: 45,
           gravity: 1.2,
           drift: 0,
-          ticks: 300,
+          ticks: 200, // Reduced from 300
         });
         confetti({
-          particleCount: 100,
+          particleCount: 30, // Reduced from 100
           angle: 120,
           spread: 55,
           origin: { x: 1, y: 0.8 },
@@ -58,7 +58,7 @@ export default function GamePage() {
           startVelocity: 45,
           gravity: 1.2,
           drift: 0,
-          ticks: 300,
+          ticks: 200, // Reduced from 300
         });
 
         if (Date.now() < end) {

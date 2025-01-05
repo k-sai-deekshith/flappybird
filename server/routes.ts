@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { db } from "@db";
 import { scores, users } from "@db/schema";
-import { desc, eq, max } from "drizzle-orm";
+import { desc, eq, max, and } from "drizzle-orm";
 
 export function registerRoutes(app: Express): Server {
   setupAuth(app);
@@ -13,9 +13,13 @@ export function registerRoutes(app: Express): Server {
       return res.status(401).send("Not authenticated");
     }
 
-    const { score } = req.body;
+    const { score, difficulty } = req.body;
     if (typeof score !== "number") {
       return res.status(400).send("Invalid score");
+    }
+
+    if (!['easy', 'medium', 'hard'].includes(difficulty)) {
+      return res.status(400).send("Invalid difficulty");
     }
 
     const [newScore] = await db
@@ -23,23 +27,32 @@ export function registerRoutes(app: Express): Server {
       .values({
         userId: req.user.id,
         score,
+        difficulty,
       })
       .returning();
 
     res.json(newScore);
   });
 
-  app.get("/api/scores", async (_req, res) => {
+  app.get("/api/scores", async (req, res) => {
+    const { difficulty = 'medium' } = req.query;
+
+    if (!['easy', 'medium', 'hard'].includes(difficulty as string)) {
+      return res.status(400).send("Invalid difficulty");
+    }
+
     const topScores = await db
       .select({
         id: scores.id,
         score: scores.score,
         userId: scores.userId,
         username: users.username,
+        difficulty: scores.difficulty,
         createdAt: scores.createdAt,
       })
       .from(scores)
       .innerJoin(users, eq(scores.userId, users.id))
+      .where(eq(scores.difficulty, difficulty as string))
       .orderBy(desc(scores.score))
       .limit(10);
 
@@ -51,12 +64,23 @@ export function registerRoutes(app: Express): Server {
       return res.status(401).send("Not authenticated");
     }
 
+    const { difficulty = 'medium' } = req.query;
+
+    if (!['easy', 'medium', 'hard'].includes(difficulty as string)) {
+      return res.status(400).send("Invalid difficulty");
+    }
+
     const result = await db
       .select({
         highScore: max(scores.score),
       })
       .from(scores)
-      .where(eq(scores.userId, req.user.id));
+      .where(
+        and(
+          eq(scores.userId, req.user.id),
+          eq(scores.difficulty, difficulty as string)
+        )
+      );
 
     const highScore = result[0]?.highScore || 0;
     res.json({ highScore });

@@ -15,6 +15,7 @@ export const scores = pgTable("scores", {
     .references(() => users.id)
     .notNull(),
   score: integer("score").notNull(),
+  difficulty: text("difficulty").notNull().default('medium'),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
