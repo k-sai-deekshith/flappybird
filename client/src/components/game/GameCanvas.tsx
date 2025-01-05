@@ -11,25 +11,25 @@ export type Difficulty = 'easy' | 'medium' | 'hard';
 
 const DIFFICULTY_SETTINGS = {
   easy: {
-    GRAVITY: 0.4,
-    JUMP_FORCE: -7,
-    PIPE_SPEED: 1.5,
-    GAP_HEIGHT: 160,
-    PIPE_SPACING: 220,
+    GRAVITY: 0.3,
+    JUMP_FORCE: -6,
+    PIPE_SPEED: 1.2,
+    GAP_HEIGHT: 180,
+    PIPE_SPACING: 300,
   },
   medium: {
-    GRAVITY: 0.5,
-    JUMP_FORCE: -8,
+    GRAVITY: 0.45,
+    JUMP_FORCE: -7,
     PIPE_SPEED: 2,
-    GAP_HEIGHT: 150,
-    PIPE_SPACING: 200,
+    GAP_HEIGHT: 160,
+    PIPE_SPACING: 250,
   },
   hard: {
     GRAVITY: 0.6,
-    JUMP_FORCE: -8.5,
-    PIPE_SPEED: 2.5,
+    JUMP_FORCE: -8,
+    PIPE_SPEED: 2.8,
     GAP_HEIGHT: 140,
-    PIPE_SPACING: 180,
+    PIPE_SPACING: 200,
   },
 };
 
@@ -305,7 +305,22 @@ export default function GameCanvas({
       bird.y += bird.velocity;
 
       if (frameRef.current % 100 === 0) {
-        const pipeY = Math.random() * (CANVAS_HEIGHT - settings.GAP_HEIGHT - 200) + 100;
+        let pipeY;
+        if (difficulty === 'hard') {
+          // For hard difficulty, alternate between high and low pipes
+          const lastPipe = pipesRef.current[pipesRef.current.length - 1];
+          if (!lastPipe || lastPipe.y < CANVAS_HEIGHT / 2) {
+            // Generate a low pipe if last was high or no pipes exist
+            pipeY = Math.random() * (CANVAS_HEIGHT / 3) + (CANVAS_HEIGHT * 2/3) - settings.GAP_HEIGHT;
+          } else {
+            // Generate a high pipe if last was low
+            pipeY = Math.random() * (CANVAS_HEIGHT / 3) + 100;
+          }
+        } else {
+          // For easy and medium, use more balanced random heights
+          pipeY = Math.random() * (CANVAS_HEIGHT - settings.GAP_HEIGHT - 200) + 100;
+        }
+
         pipesRef.current.push(
           new Pipe(CANVAS_WIDTH, pipeY, PIPE_WIDTH, settings.GAP_HEIGHT)
         );
