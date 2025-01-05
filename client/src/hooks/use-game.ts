@@ -11,12 +11,13 @@ export function useGame() {
   const queryClient = useQueryClient();
 
   // Fetch the user's highest score
-  const { data: highScoreData } = useQuery({
+  const { data: highScoreData } = useQuery<{ highScore: number }>({
     queryKey: ["/api/scores/highest"],
     enabled: !!user,
+    staleTime: 0, // Always refetch to ensure we have the latest high score
   });
 
-  const highScore = highScoreData?.highScore || 0;
+  const highScore = highScoreData?.highScore ?? 0;
 
   const submitScore = useMutation({
     mutationFn: async (score: number) => {
@@ -47,7 +48,11 @@ export function useGame() {
       setIsPlaying(false);
 
       if (user) {
-        await submitScore.mutateAsync(score);
+        try {
+          await submitScore.mutateAsync(score);
+        } catch (error) {
+          console.error("Failed to submit score:", error);
+        }
       }
     },
     [user, submitScore]
