@@ -76,3 +76,27 @@ Feel free to submit issues and enhancement requests!
 ## 📜 License
 
 © 2025 Wild West Flappy Bird. All rights reserved.
+
+
+## 🖼️ Screenshots
+
+Here are some screenshots of the Wild West Flappy Bird game:
+
+### Login Screen
+![Login Screen](./screenshots/Login.png)
+
+### Main Menu
+![Main Menu](./screenshots/MainMenu.png)
+
+### Difficulty Selection
+![Difficulty Selection](./screenshots/Difficulty.png)
+
+### Gameplay
+![Gameplay](./screenshots/Gameplay.png)
+
+
+## 🌐 Play the Game Online
+
+The Wild West Flappy Bird game is live! Play it here:
+
+[https://flappy-nest-clone-ksaideekshith.replit.app/](https://flappy-nest-clone-ksaideekshith.replit.app/)
