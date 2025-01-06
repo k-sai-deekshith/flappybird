@@ -68,9 +68,9 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   }
 
-  // Use PORT from environment or fallback to 3000
-  const port = Number(process.env.PORT) || 3000;
-  server.listen(port, "0.0.0.0", () => {
-    log(`Server running in ${app.get("env")} mode on port ${port}`);
+  // ALWAYS serve on port 5000
+  const PORT = 5000;
+  server.listen(PORT, "0.0.0.0", () => {
+    log(`Server running in ${app.get("env")} mode on port ${PORT}`);
   });
 })();
