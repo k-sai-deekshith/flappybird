@@ -2,6 +2,10 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -64,8 +68,9 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   }
 
-  const PORT = process.env.PORT || 5000;
-  server.listen(PORT, "0.0.0.0", () => {
-    log(`Server running in ${app.get("env")} mode on port ${PORT}`);
+  // Use PORT from environment or fallback to 3000
+  const port = Number(process.env.PORT) || 3000;
+  server.listen(port, "0.0.0.0", () => {
+    log(`Server running in ${app.get("env")} mode on port ${port}`);
   });
 })();
